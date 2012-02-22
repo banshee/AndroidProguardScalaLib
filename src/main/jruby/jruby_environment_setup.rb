@@ -1,8 +1,5 @@
 require 'java'
 
-#$LOAD_PATH << "/Users/james/workspace/AndroidProguardScala/jruby"
-#$LOAD_PATH << "/Users/james/src/jruby/lib/ruby/1.8/"
-
 java_package 'com.restphone.androidproguardscala.jruby'
 
 class JrubyEnvironmentSetup
@@ -36,22 +33,5 @@ class JrubyEnvironmentSetup
     require 'pathname'
     f = Pathname.new jarfile.to_s
     $LOAD_PATH << f.parent
-    require f.basename
-    puts %Q{require "#{f.parent}"}
-    puts %Q{require "#{f.basename}"}
-  end
-
-  java_signature 'void addIvyDirectoryToLoadPath(String dir)'
-
-  def self.add_ivy_directory_to_load_path dir
-    require 'pathname'
-    all_jars = Dir.glob(dir.to_s + "/**/*.jar")
-    all_jars.each do |j|
-      f = Pathname.new j
-      case j
-      when /asm-3.3.1.jar/, /proguard-base-4.6.jar/
-        $LOAD_PATH << f.parent
-      end
-    end
   end
 end
