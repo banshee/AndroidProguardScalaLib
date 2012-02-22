@@ -4,8 +4,12 @@ import com.restphone.androidproguardscala.jruby.JrubyEnvironmentSetup._
 import com.restphone.androidproguardscala.jruby.ProguardCacheJava
 import org.objectweb.asm.Type
 
-object JrubyEnvironmentSetup {
-  def rubyCacheController(directoryContainingJrubyLibraries: String) = {
+object ProguardCache {
+  /**
+   * @param directoryContainingJrubyLibraries Full path to the directory contain the jruby libraries
+   * @return The cache controller
+   */
+  def buildCacheController(directoryContainingJrubyLibraries: String) = {
     addJrubyJarfile(pathForJarFileContainingClass(classOf[org.jruby.Ruby]))
 
     List(
