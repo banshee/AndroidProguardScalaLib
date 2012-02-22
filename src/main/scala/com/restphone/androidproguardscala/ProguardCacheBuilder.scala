@@ -1,10 +1,11 @@
 package com.restphone.androidproguardscala
 
 import com.restphone.androidproguardscala.jruby.JrubyEnvironmentSetup._
-import com.restphone.androidproguardscala.jruby.ProguardCacheJava
+import com.restphone.androidproguardscala.jruby.ProguardCache
 import org.objectweb.asm.Type
+import com.restphone.androidproguardscala.jruby.ProguardCacheJavaInterop
 
-object ProguardCache {
+object ProguardCacheBuilder {
   /**
    * @param directoryContainingJrubyLibraries Full path to the directory contain the jruby libraries
    * @return The cache controller
@@ -22,7 +23,7 @@ object ProguardCache {
       directoryContainingJrubyLibraries + "jruby_lib/main/jruby") map
       addToLoadPath
 
-    new ProguardCacheJava
+    new ProguardCacheJavaInterop
   }
 
   private def pathForJarFileContainingClass[T](c: Class[T]) = {

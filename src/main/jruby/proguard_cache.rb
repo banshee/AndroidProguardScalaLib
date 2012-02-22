@@ -14,6 +14,69 @@ require 'proguard_cache_parameters'
 java_package 'com.restphone.androidproguardscala.jruby'
 
 class ProguardCacheRuby
+  def build_proguard_dependency_files args
+    logger = args.logger
+    setup_external_variables args
+    update_and_load_additional_libs_ruby_file args
+    classFiles = (args.classFiles + ($ADDITIONAL_LIBS || [])).sort.uniq
+    classFiles.each do |i|
+      raise "non-existant input directory: " + i.to_s unless File.exists? i.to_s
+    end
+    classFiles = classFiles.map {|f| JvmEntityBuilder.create f}
+    new_parameters = ProguardCacheParameters.new :parent_parameters => args, :new_parameters => {:classFiles => classFiles}
+    result = build_proguard_dependencies new_parameters
+    all_classnames = calculate_classnames_in_cache_dir new_parameters.cacheDir
+    parameters_after_calculating_classes = ProguardCacheParameters.new :parent_parameters => new_parameters, :new_parameters => {'classnames' => all_classnames}
+    build_proguard_file parameters_after_calculating_classes
+    result
+  end
+
+  def run_proguard args
+    destination_file = args.proguard_destination_file
+    logger = args.logger
+    config_file = args.proguard_config_file
+    if !File.exists?(destination_file)
+      logger.logMsg("Running proguard with config file " + config_file)
+      ProguardRunner.execute_proguard(:config_file => config_file, :cksum => ".#{args.dependency_checksum}")
+    end
+    args
+  end
+
+  def install_proguard_output args
+    require 'pp'
+    args.logger.logMsg("gotsrg" + args.pretty_inspect)
+    destination_file = args.proguard_destination_file
+    logger = args.logger
+
+    if File.exists?(destination_file)
+      destination_jar = args.destination_jar
+      FileUtils.install destination_file, destination_jar, :mode => 0666, :verbose => false
+      logger.logMsg("installed #{destination_file} to #{destination_jar}")
+    else
+      logger.logError("No proguard output found at " + destination_file)
+      File.unlink destination_jar
+    end
+    args
+  end
+
+  java_signature 'void clean_cache(String cacheDir)'
+
+  def clean_cache cache_dir
+    depend_files = Dir.glob(cache_dir.to_s + "/**/*.proto_depend")
+    jar_files = Dir.glob(cache_dir.to_s + "/**/*.jar")
+    dependency_lines = Dir.glob(cache_dir.to_s + "/**/dependency_lines*")
+    (depend_files + jar_files + dependency_lines).each do |f|
+      File.unlink f
+    end
+    # The checksum has 40 characters - only delete directories that are exactly that long
+    dependency_directories = Dir.glob(cache_dir.to_s + "/*").select do |d|
+      (File.basename d).length == 40
+    end
+    dependency_directories.each {|d| FileUtils.rm_rf d}
+  end
+
+  private
+
   def proguard_output pattern, checksum
     pattern.sub("CKSUM", checksum)
   end
@@ -148,24 +211,6 @@ Example: jruby -S rake -T -v proguard[proguard_android_scala.config,proguard_cac
       :destination_jar => destination_jar}
   end
 
-  def run_proguard args
-    destination_file = args.proguard_destination_file
-    logger = args.logger
-    config_file = args.proguard_config_file
-    if !File.exists?(destination_file)
-      logger.logMsg("Running proguard with config file " + config_file)
-      ProguardRunner.execute_proguard(:config_file => config_file, :cksum => ".#{args.dependency_checksum}")
-    end
-    if File.exists?(destination_file)
-      destination_jar = args.destination_jar
-      FileUtils.install destination_file, destination_jar, :mode => 0666, :verbose => false
-      logger.logMsg("installed #{destination_file} to #{destination_jar}")
-    else
-      logger.logError("No proguard output found at " + destination_file)
-      File.unlink destination_jar
-    end
-  end
-
   def build_proguard_file args
     require 'tempfile'
     Tempfile.open("android_scala_proguard") do |f|
@@ -212,24 +257,6 @@ Example: jruby -S rake -T -v proguard[proguard_android_scala.config,proguard_cac
     end
   end
 
-  def build_dependency_files_and_final_jar args
-    logger = args.logger
-    setup_external_variables args
-    update_and_load_additional_libs_ruby_file args
-    classFiles = (args.classFiles + ($ADDITIONAL_LIBS || [])).sort.uniq
-    classFiles.each do |i|
-      raise "non-existant input directory: " + i.to_s unless File.exists? i.to_s
-      puts "input directory: #{i}"
-    end
-    classFiles = classFiles.map {|f| JvmEntityBuilder.create f}
-    new_parameters = ProguardCacheParameters.new :parent_parameters => args, :new_parameters => {:classFiles => classFiles}
-    result = build_proguard_dependencies new_parameters
-    all_classnames = calculate_classnames_in_cache_dir new_parameters.cacheDir
-    parameters_after_calculating_classes = ProguardCacheParameters.new :parent_parameters => new_parameters, :new_parameters => {'classnames' => all_classnames}
-    build_proguard_file parameters_after_calculating_classes
-    run_proguard result
-  end
-
   def update_and_load_additional_libs_ruby_file args
     additional_file = args.confDir.to_s + "/additional_libs.rb"
     if !File.exists? additional_file
@@ -241,22 +268,6 @@ Example: jruby -S rake -T -v proguard[proguard_android_scala.config,proguard_cac
       end
     end
     load additional_file
-  end
-
-  java_signature 'void clean_cache(String cacheDir)'
-
-  def clean_cache cache_dir
-    depend_files = Dir.glob(cache_dir.to_s + "/**/*.proto_depend")
-    jar_files = Dir.glob(cache_dir.to_s + "/**/*.jar")
-    dependency_lines = Dir.glob(cache_dir.to_s + "/**/dependency_lines*")
-    (depend_files + jar_files + dependency_lines).each do |f|
-      File.unlink f
-    end
-    # The checksum has 40 characters - only delete directories that are exactly that long
-    dependency_directories = Dir.glob(cache_dir.to_s + "/*").select do |d|
-      (File.basename d).length == 40
-    end
-    dependency_directories.each {|d| FileUtils.rm_rf d}
   end
 
   def setup_external_variables args
