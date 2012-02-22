@@ -2,13 +2,19 @@ require 'java'
 
 java_package 'com.restphone.androidproguardscala.jruby'
 
+# This file is normally compiled to Java and called from Java or Scala - it's not used
+# from Ruby.
+
+# Notice that in this file we can't do require at the top level.  This file contains
+# code that sets up the runtime environment, including things like the LOAD_PATH that
+# you need to use require.
+
 class JrubyEnvironmentSetup
   java_signature 'void addJrubyJarfile(String pathToJrubyCompleteJarfile)'
   def self.add_jruby_jarfile jruby_complete_jarfile
     require 'jruby'
     require jruby_complete_jarfile
-    ruby_paths =
-    if JRuby.runtime.is1_9
+    ruby_paths = if JRuby.runtime.is1_9
       %w{ site_ruby/1.9 site_ruby/shared site_ruby/1.8 1.9 }
     else
       %w{ site_ruby/1.8 site_ruby/shared 1.8 }
