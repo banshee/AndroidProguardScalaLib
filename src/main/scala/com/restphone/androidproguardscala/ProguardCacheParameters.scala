@@ -9,6 +9,7 @@ case class ProguardCacheParameters(
   outputJar: String, // Final destination for the jar file (Only one of these, this is the jar included in the final android build)
   scalaLibraryJar: String, // path to scala-library.jar
   androidLibraryJar: String, // path to android.jar
+  
   proguardDefaults: String = "", // a string to add to the proguard conf file
   extraLibs: Array[String] = Array(), // passed to proguard -libraryjars
   workspaceDir: String = "", // Provided for use in additional_libs - can be "" but not null 
