@@ -44,7 +44,6 @@ class ProguardCacheRuby
 
   def install_proguard_output args
     require 'pp'
-    args.logger.logMsg("gotsrg" + args.pretty_inspect)
     destination_file = args.proguard_destination_file
     logger = args.logger
 
