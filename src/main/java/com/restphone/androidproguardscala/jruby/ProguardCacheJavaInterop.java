@@ -1,3 +1,5 @@
+// Compiled with jrubyc - do not edit
+
 package com.restphone.androidproguardscala.jruby;
 
 import org.jruby.Ruby;
