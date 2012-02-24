@@ -18,6 +18,11 @@
     module=""
     status="integration">
   </info>
+    <configurations>
+        <conf name="compile"/>
+        <conf name="runtime" extends="compile"/>
+        <conf name="test"    extends="runtime"/>
+    </configurations>
   <dependencies>
     <dependency
       org="asm"
@@ -31,5 +36,7 @@
       org="com.google.guava"
       name="guava"
       rev="11.0" />
+         <dependency org="org.jruby" name="jruby-complete" rev="1.6.6" conf="compile->default"/>
   </dependencies>
+  
 </ivy-module>
