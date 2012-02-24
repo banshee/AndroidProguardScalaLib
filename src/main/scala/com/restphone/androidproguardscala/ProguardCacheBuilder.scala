@@ -24,8 +24,10 @@ object ProguardCacheBuilder {
       classOf[List[String]]) foreach { loadClassIntoJRuby(_) }
 
     Iterable(
-      directoryContainingJrubyLibraries + "lib_src/main/jruby",
-      directoryContainingJrubyLibraries + "jruby_lib/main/jruby") map
+      directoryContainingJrubyLibraries,
+      directoryContainingJrubyLibraries + "/lib_src/main/jruby",
+      directoryContainingJrubyLibraries + "/src/main/jruby",
+      directoryContainingJrubyLibraries + "/jruby_lib/main/jruby") foreach
       addToLoadPath
 
     new ProguardCacheJavaInterop
