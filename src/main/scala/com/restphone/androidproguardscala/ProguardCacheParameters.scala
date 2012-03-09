@@ -1,19 +1,16 @@
 package com.restphone.androidproguardscala
 
 case class ProguardCacheParameters(
-  cacheDir: String, // Directory to store the cached jar files and the text files used to calculate signatures
-  confDir: String, // Directory to store ProGuard configuration files
-  classFiles: Array[String], // Files containing application code, directories and/or jar files; used in proguard -injar option
-  proguardProcessedConfFile: String, // The final proguard configuration file
-  cachedJar: String, // Where to store cached minified jar file.  Needs to contain the string CKSUM.  (There will be many of these with different checksums)
-  outputJar: String, // Final destination for the jar file (Only one of these, this is the jar included in the final android build)
-  scalaLibraryJar: String, // path to scala-library.jar
-  androidLibraryJar: String, // path to android.jar
-  
-  proguardDefaults: String = "", // a string to add to the proguard conf file
-  extraLibs: Array[String] = Array(), // passed to proguard -libraryjars
-  workspaceDir: String = "", // Provided for use in additional_libs - can be "" but not null 
-  projectDir: String = "", // Provided for use in additional_libs - can be "" but not null 
+  classFiles: Array[String], // Files containing application code, directories and/or jar files; used in proguard -injar option.  The class files for your application go here.
+  cacheDir: String, // Stores the cached jar files and the text files used to calculate signatures.  APS can also clear it on clean builds, so it should be a dedicated directory.
+  confDir: String, // Stores ProGuard configuration files created during builds.  If you put a "/proguard_additions.conf" file in this directory, the contents of the file will be included in the proguard file used for the build (specified by proguardProcessedConfFile). 
+  proguardProcessedConfFile: String, // The proguard configuration file created by the build.  It's a full proguard configuration and can be used outside APS.
+  cachedJar: String, // Where to store cached minified jar file.  The name must contain the string CKSUM (all caps).  Appears in the proguard file as -outjar.  Normally this is a path to a file cacheDir. 
+  outputJar: String, // Final destination for the jar file.  ABS runs proguard with a destination of cachedJar, and then copies the correct cached output file into outputJar.  (There are many cachedJar files, and only one outputJar)
+  scalaLibraryJar: String, // path to scala-library.jar.  Written to the proguard file as -injar, before -outjar.  (Order in the proguard file is what makes only scala libraries appear in the output.)
+  libraryJars: Array[String] = Array(), // passed to proguard -libraryjars.  Should always include android.jar.
+  proguardDefaults: String = "", // an arbitrary string added to the proguard conf file
+  workspaceDir: String = "", // Passed to additional_libs - can be "" but not null.  (Normally only used by the Eclipse plugin, but available for anyone to use.)
+  projectDir: String = "", // Passed to additional_libs - can be "" but not null. (Normally only used by the Eclipse plugin, but available for anyone to use.)
   proguardAdditionsFile: String = "", // Path to file added to configuration - can be ""
-  logger: ProvidesLogging = ProvidesLogging.NullLogger
-  )
+  logger: ProvidesLogging = ProvidesLogging.NullLogger)
