@@ -1,5 +1,7 @@
 package com.restphone.androidproguardscala
+
 import scala.util.control.Exception._
+import java.io.File
 
 object NotNull {
   val catchNull = catching(classOf[NullPointerException])
@@ -10,5 +12,20 @@ object NotNull {
       case x => x
     }
   }
+}
+
+class RichFile(f: File) {
+  def /(that: String) = new java.io.File(f, that)
+}
+
+object RichFile {
+  def slurp(f: File) = {
+    val s = scala.io.Source.fromFile(f)
+    val result = s.getLines.mkString("\n")
+    s.close()
+    result
+  }
+  def ensureDirExists(f: File) =
+    if (!f.exists) f.mkdir
 }
 
