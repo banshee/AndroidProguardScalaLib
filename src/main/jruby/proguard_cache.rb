@@ -223,30 +223,29 @@ Example: jruby -S rake -T -v proguard[proguard_android_scala.config,proguard_cac
         f.puts %Q[-injar "#{classfile}"]
       end
 
-      android_lib_jar = args.androidLibraryJar
-      if android_lib_jar
-        f.puts "\n# Android library calculated from classpath"
-        f.puts %Q(-libraryjars "#{args.androidLibraryJar}")
-      end
-
-      extra_libs = args.extraLibs
-      f.puts "\n# Extra libraries"
+      extra_libs = args.library_jars
+      f.puts "\n# Library jars"
       (extra_libs || []).each do |lib|
         f.puts %Q(-libraryjars "#{lib}")
       end
-
+      
+      f.puts
+      
       f.puts "\n# Builtin defaults"
       f.write defaults
-      f.puts "\n# Inserting file #{args.proguardAdditionsFile} - possibly empty"
+      f.puts "\n# Inserting file #{args.proguardAdditionsFile}"
       if File.exists? args.proguardAdditionsFile
         additions_file = File.new args.proguardAdditionsFile
         f.write additions_file.read
       end
+      
+      f.puts
 
-      f.puts "# Keep all non-scala classess"
+      f.puts "# Keep all user code"
       args.classnames.each do |classname|
         f.puts "-keep class #{classname} {*;}"
       end
+      
       f.flush
 
       conf_file = args.proguardProcessedConfFile
