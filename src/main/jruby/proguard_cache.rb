@@ -49,7 +49,12 @@ class ProguardCacheRuby
 
     if File.exists?(destination_file)
       destination_jar = args.destination_jar
-      FileUtils.install destination_file, destination_jar, :mode => 0666, :verbose => false
+      
+      if !File.exists?(destination_jar) || !FileUtils.identical?(destination_jar, destination_file) 
+        # On windows, tools have kept the minified jar open.  Don't try to delete
+        # it, just overwrite it.
+        FileUtils.copy_file destination_file, destination_jar
+      end
       logger.logMsg("installed #{destination_file} to #{destination_jar}")
     else
       logger.logError("No proguard output found at " + destination_file)
