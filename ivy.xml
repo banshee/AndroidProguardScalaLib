@@ -1,42 +1,39 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<!-- Licensed to the Apache Software Foundation (ASF) under one or more contributor 
-  license agreements. See the NOTICE file distributed with this work for additional 
-  information regarding copyright ownership. The ASF licenses this file to 
-  you under the Apache License, Version 2.0 (the "License"); you may not use 
-  this file except in compliance with the License. You may obtain a copy of 
-  the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required 
-  by applicable law or agreed to in writing, software distributed under the 
-  License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS 
-  OF ANY KIND, either express or implied. See the License for the specific 
-  language governing permissions and limitations under the License. -->
-<ivy-module
-  version="2.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
-  <info
-    organisation="com.restphone"
-    module=""
-    status="integration">
-  </info>
-    <configurations>
-        <conf name="compile"/>
-        <conf name="runtime" extends="compile"/>
-        <conf name="test"    extends="runtime"/>
-    </configurations>
-  <dependencies>
-    <dependency
-      org="asm"
-      name="asm-commons"
-      rev="3.3.1" />
-    <dependency
-      org="net.sf.proguard"
-      name="proguard-base"
-      rev="4.6" />
-    <dependency
-      org="com.google.guava"
-      name="guava"
-      rev="11.0.1" />
-         <dependency org="org.jruby" name="jruby-complete" rev="1.6.7" conf="compile->default"/>
-  </dependencies>
-  
+<?xml version="1.0" encoding="UTF-8"?>
+<ivy-module version="2.0" xmlns:e="http://ant.apache.org/ivy/extra">
+	<info organisation="com.restphone" module="androidproguardscalalib_2.10" revision="0.1-SNAPSHOT" status="integration" publication="20121123212738">
+		<description>
+		AndroidProguardScalaLib
+		</description>
+	</info>
+	<configurations>
+		<conf name="compile" visibility="public" description=""/>
+		<conf name="runtime" visibility="public" description="" extends="compile"/>
+		<conf name="test" visibility="public" description="" extends="runtime"/>
+		<conf name="provided" visibility="public" description=""/>
+		<conf name="optional" visibility="public" description=""/>
+		
+		
+		
+		
+		<conf name="sources" visibility="public" description=""/>
+		<conf name="docs" visibility="public" description=""/>
+		<conf name="pom" visibility="public" description=""/>
+	</configurations>
+	<publications>
+		<artifact name="androidproguardscalalib_2.10" type="pom" ext="pom" conf="pom"/>
+		<artifact name="androidproguardscalalib_2.10" type="jar" ext="jar" conf="compile"/>
+		<artifact name="androidproguardscalalib_2.10" type="src" ext="jar" conf="sources" e:classifier="sources"/>
+		<artifact name="androidproguardscalalib_2.10" type="doc" ext="jar" conf="docs" e:classifier="javadoc"/>
+	</publications>
+    <dependencies defaultconfmapping="*->default,sources" >
+		<dependency org="org.scala-lang" name="scala-library" rev="2.10.0-SNAPSHOT" conf="compile->default(compile)"/>
+		<dependency org="com.restphone" name="javasignatureparser_2.10" rev="0.3-SNAPSHOT" conf="compile->default(compile)"/>
+		<dependency org="org.scalatest" name="scalatest_2.10.0-RC3" rev="2.0.M5-B1" conf="compile->default(compile)"/>
+		<dependency org="junit" name="junit" rev="4.8.1" conf="test->default(compile)"/>
+		<dependency org="org.scalacheck" name="scalacheck_2.10" rev="1.10.1-SNAPSHOT" conf="test->default(compile)"/>
+		<exclude org="org.scala-lang" module="scala-library" artifact="*" type="jar" ext="*" matcher="exact"/>
+		<exclude org="org.scala-lang" module="scala-compiler" artifact="*" type="jar" ext="*" matcher="exact"/>
+		<override org="org.scala-lang" module="scala-library" matcher="exact" rev="2.10.0-SNAPSHOT"/>
+		<override org="org.scala-lang" module="scala-compiler" matcher="exact" rev="2.10.0-SNAPSHOT"/>
+	</dependencies>
 </ivy-module>
