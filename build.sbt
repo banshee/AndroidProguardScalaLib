@@ -21,7 +21,8 @@ externalResolvers := Seq(
 transitiveClassifiers := Seq("sources")
 
 libraryDependencies ++= Seq(
-  "com.restphone" % "javasignatureparser_2.10" % "0.3-SNAPSHOT"
+  "com.restphone" % "javasignatureparser_2.10" % "0.3-SNAPSHOT",
+  "com.restphone" % "jartender_2.10" % "0.2-SNAPSHOT"
 )
 
 libraryDependencies ++= Seq(

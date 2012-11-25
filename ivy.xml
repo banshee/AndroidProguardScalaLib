@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:e="http://ant.apache.org/ivy/extra">
-	<info organisation="com.restphone" module="androidproguardscalalib_2.10" revision="0.1-SNAPSHOT" status="integration" publication="20121123212738">
+	<info organisation="com.restphone" module="androidproguardscalalib_2.10" revision="0.1-SNAPSHOT" status="integration" publication="20121124184732">
 		<description>
 		AndroidProguardScalaLib
 		</description>
@@ -28,6 +28,7 @@
     <dependencies defaultconfmapping="*->default,sources" >
 		<dependency org="org.scala-lang" name="scala-library" rev="2.10.0-SNAPSHOT" conf="compile->default(compile)"/>
 		<dependency org="com.restphone" name="javasignatureparser_2.10" rev="0.3-SNAPSHOT" conf="compile->default(compile)"/>
+		<dependency org="com.restphone" name="jartender_2.10" rev="0.2-SNAPSHOT" conf="compile->default(compile)"/>
 		<dependency org="org.scalatest" name="scalatest_2.10.0-RC3" rev="2.0.M5-B1" conf="compile->default(compile)"/>
 		<dependency org="junit" name="junit" rev="4.8.1" conf="test->default(compile)"/>
 		<dependency org="org.scalacheck" name="scalacheck_2.10" rev="1.10.1-SNAPSHOT" conf="test->default(compile)"/>
