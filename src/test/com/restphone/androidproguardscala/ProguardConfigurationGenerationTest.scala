@@ -15,7 +15,7 @@ class ProguardConfigurationGenerationTest extends FunSuite with ShouldMatchers {
   test( "can generate the right proguard config file" ) {
     val testConf = ProguardCacheParameters(
       inputJars = Array( "/foo1.jar", "/foo2.jar" ),
-      classFiles = Array( "/cf1", "/cf2" ),
+      classFiles = Array( """C:\cygwin\home\james\workspace\AndroidProguardScalaLib\bin""" ),
       cacheDir = "/cacheDir1",
       confDir = "/confDir1",
       proguardProcessedConfFile = "proguardProcessedConfFile",
@@ -31,9 +31,8 @@ class ProguardConfigurationGenerationTest extends FunSuite with ShouldMatchers {
     val result = ProguardConfigFileGenerator.generateConfigFileContents( testConf )
 
     println( result )
-
-    val t = ProguardConfigFileGenerator.tree( new File( "c:/Users/james/t1" ), x => true )
-    println(t)
-    t.toList foreach { println( _ ) }
+    
+    val f = ProguardConfigFileGenerator.splitFile(new File("""\\something\else\\here"""))
+    println(f)
   }
 }

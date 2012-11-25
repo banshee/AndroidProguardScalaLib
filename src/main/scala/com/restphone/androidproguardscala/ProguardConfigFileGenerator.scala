@@ -1,36 +1,44 @@
 package com.restphone.androidproguardscala
 
-import com.google.common.io.Files
 import java.io.File
-import java.nio.charset.Charset
-import com.google.common.base.Charsets
-import scala.util.control.Exception._
 import java.io.IOException
+
+import scala.Array.canBuildFrom
+import scala.Option.option2Iterable
+import scala.annotation.tailrec
+import scala.collection.immutable.Stream.consWrapper
+
+import com.google.common.base.Charsets
+import com.google.common.io.Files
+import com.restphone.jartender.DependencyAnalyser
+import com.restphone.jartender.ProvidesClass
 
 object ProguardConfigFileGenerator {
   def tree( root: File, descendCheck: File => Boolean = { _ => true } ): Stream[File] = {
     require( root != null )
-    def doDirectoryEntries( entries: List[File] ): Stream[File] = {
-      entries match {
-        case h :: t => tree( h, descendCheck ) ++ doDirectoryEntries( t )
-        case Nil => Stream.Empty
+    def directoryEntries( f: File ) = for {
+      direntries <- Option( f.list ).toStream
+      d <- direntries
+    } yield new File( f, d )
+    val shouldDescend = root.isDirectory && descendCheck( root )
+    ( root.exists, shouldDescend ) match {
+      case ( false, _ ) => Stream.Empty
+      case ( true, true ) => root #:: ( directoryEntries( root ) flatMap { tree( _, descendCheck ) } )
+      case ( true, false ) => Stream( root )
+    }
+  }
+  
+  def splitFile(f: File) : List[File] = {
+    @tailrec def splitFileRecursive(f: File, acc: List[File]) : List[File] = {
+      f.getParentFile match {
+        case null => f :: acc
+        case p => splitFileRecursive(p, f :: acc)
       }
     }
-    ( root.exists, root.isDirectory, descendCheck( root ) ) match {
-      case ( false, _, _ ) => Stream.Empty
-      case ( true, true, true ) => root #:: doDirectoryEntries( root.list.toList map { new File( root, _ ) } )
-      case ( true, _, _ ) => Stream( root )
-    }
+    splitFileRecursive(f, List())
   }
 
   def treeIgnoringHiddenFilesAndDirectories( root: File ) = tree( root, { !_.isHidden } ) filter { !_.isHidden }
-
-  //    if ( !root.exists || ( skipHidden && root.isHidden ) ) Stream.empty
-  //    else root #:: (
-  //      root.listFiles match {
-  //        case null => Stream.empty
-  //        case files => files.toStream.flatMap( tree( _, skipHidden ) )
-  //      } )
 
   def fileContentsOrExceptionMessage( f: File ) = {
     try {
@@ -56,16 +64,45 @@ object ProguardConfigFileGenerator {
     val proguardAdditionsFile = Array( "# Inserting proguard additions file here", fileContentsOrExceptionMessage( new File( c.proguardAdditionsFile ) ) )
     val builtinOptions = Array( c.proguardDefaults )
 
-    val combined = inputjars ++ outputjar ++ classfiles ++ libraryjars ++ builtinOptions ++ proguardAdditionsFile
+    val combined = inputjars ++ outputjar ++ classfiles ++ libraryjars ++ builtinOptions ++ proguardAdditionsFile ++ keepOptionsForClassfiles( c.classFiles )
 
     combined.mkString( "\n" )
   }
 
-  def keepUserCode( c: ProguardCacheParameters ) = {
-    List( "" )
+  def classfilesAndJarfilesInDirectories( classfiledirectories: Iterable[String] ) = for {
+    classfileDirAsString <- classfiledirectories
+    classfiledir = new File( classfileDirAsString )
+    cf <- tree( classfiledir ) if ( cf.getName.endsWith( ".class" ) || cf.getName.endsWith( ".jar" ) )
+  } yield cf
+
+  def keepOptionsForClassfiles( classfiledirectories: Iterable[String] ) = {
+    for {
+      file <- classfilesAndJarfilesInDirectories( classfiledirectories )
+      klass <- classesDefined(file)
+      classname = klass.s
+    } yield {
+      f"-keep class $classname {*;}"
+    }
+  }
+
+  import com.restphone.jartender.DependencyAnalyser
+
+  def classesDefined( f: File ) = {
+    val items = DependencyAnalyser.buildItemsFromFile(f)
+    for {
+      i <- items
+      ProvidesClass(_, _, internalName, _, _, _) <- i.elements
+    } yield internalName.javaIdentifier
   }
 }
-
+//
+//
+//  version: Int,
+//  access: Int,
+//  internalName: InternalName,
+//  signature: Option[Signature],
+//  superName: InternalName,
+//  interfaces: List[InternalName]
 //# scala-library.jar was calculated from the classpath
 //-injars "C:\Users\james\eclipse\configuration\org.eclipse.osgi\bundles\1103\1\.cp\lib\scala-library.jar"(!META-INF/MANIFEST.MF)
 //
