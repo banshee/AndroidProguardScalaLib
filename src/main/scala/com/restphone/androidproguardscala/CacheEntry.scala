@@ -7,16 +7,13 @@ import com.google.common.io.Files
 import com.google.common.io.ByteStreams
 import scala.actors.Futures.future
 
-case class ProviderFileInformation( filename: String, checksum: String )
-case class ProviderFilesInformation( items: Set[ProviderFileInformation] )
-
 case class Cache( entries: Set[CacheEntry] ) {
   private val pentries = entries.par
   def findInCache( items: Set[UsesElement], providers: ProviderFilesInformation ) =
     pentries.find { _.thisCacheEntryProvides( items, providers ) }
 }
 
-class CacheEntry(
+case class CacheEntry(
   usesItems: Set[UsesElement],
   providerFileInformation: ProviderFilesInformation,
   jarfilepath: String ) {
@@ -25,6 +22,9 @@ class CacheEntry(
     items.subsetOf( usesItems ) && ( providers == providerFileInformation )
   }
 }
+
+case class ProviderFileInformation( filename: String, checksum: String )
+case class ProviderFilesInformation( items: Set[ProviderFileInformation] )
 
 object ProviderFilesInformation {
   def apply( files: Traversable[File] ): ProviderFilesInformation = {

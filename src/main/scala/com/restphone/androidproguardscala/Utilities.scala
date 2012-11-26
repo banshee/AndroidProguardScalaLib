@@ -1,8 +1,14 @@
 package com.restphone.androidproguardscala
 
-import scala.util.control.Exception._
+import java.io.ByteArrayOutputStream
 import java.io.File
+import java.io.ObjectOutputStream
 import scala.annotation.tailrec
+import scala.util.control.Exception._
+import java.io.ByteArrayInputStream
+import java.io.ObjectInputStream
+import scalaz._
+import Scalaz._
 
 object NotNull {
   val catchNull = catching( classOf[NullPointerException] )
@@ -51,4 +57,23 @@ object RichFile {
   def joinFile( fs: List[File] ) = fs.mkString( File.pathSeparator )
 
   def treeIgnoringHiddenFilesAndDirectories( root: File ) = tree( root, { !_.isHidden } ) filter { !_.isHidden }
+}
+
+object SerializableUtilities {
+  def converToByteArray( x: Serializable ) = {
+    val out = new ByteArrayOutputStream
+    val objout = new ObjectOutputStream( out )
+    objout.writeObject( x )
+    out.toByteArray
+  }
+
+  def byteArrayToObject[T]( bytes: Array[Byte] ): Option[T] = {
+    try {
+      val input = new ByteArrayInputStream( bytes )
+      val readstream = new ObjectInputStream( input )
+      some( readstream.readObject.asInstanceOf[T] )
+    } catch {
+      case _: Throwable => None
+    }
+  }
 }
