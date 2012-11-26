@@ -10,6 +10,7 @@ import scala.util.Random.shuffle
 import scalaz._
 import Scalaz._
 import java.io.File
+import com.restphone.androidproguardscala.RichFile._
 
 class ProguardConfigurationGenerationTest extends FunSuite with ShouldMatchers {
   test( "can generate the right proguard config file" ) {
@@ -32,7 +33,10 @@ class ProguardConfigurationGenerationTest extends FunSuite with ShouldMatchers {
 
     println( result )
     
-    val f = ProguardConfigFileGenerator.splitFile(new File("""\\something\else\\here"""))
+    val f = splitFile(new File("""\\something\else\\here"""))
     println(f)
+  }
+  
+  test("can generate the right set of Provides* and Uses*") {
   }
 }

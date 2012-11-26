@@ -12,33 +12,9 @@ import com.google.common.base.Charsets
 import com.google.common.io.Files
 import com.restphone.jartender.DependencyAnalyser
 import com.restphone.jartender.ProvidesClass
+import com.restphone.androidproguardscala.RichFile._
 
 object ProguardConfigFileGenerator {
-  def tree( root: File, descendCheck: File => Boolean = { _ => true } ): Stream[File] = {
-    require( root != null )
-    def directoryEntries( f: File ) = for {
-      direntries <- Option( f.list ).toStream
-      d <- direntries
-    } yield new File( f, d )
-    val shouldDescend = root.isDirectory && descendCheck( root )
-    ( root.exists, shouldDescend ) match {
-      case ( false, _ ) => Stream.Empty
-      case ( true, true ) => root #:: ( directoryEntries( root ) flatMap { tree( _, descendCheck ) } )
-      case ( true, false ) => Stream( root )
-    }
-  }
-  
-  def splitFile(f: File) : List[File] = {
-    @tailrec def splitFileRecursive(f: File, acc: List[File]) : List[File] = {
-      f.getParentFile match {
-        case null => f :: acc
-        case p => splitFileRecursive(p, f :: acc)
-      }
-    }
-    splitFileRecursive(f, List())
-  }
-
-  def treeIgnoringHiddenFilesAndDirectories( root: File ) = tree( root, { !_.isHidden } ) filter { !_.isHidden }
 
   def fileContentsOrExceptionMessage( f: File ) = {
     try {
@@ -78,7 +54,7 @@ object ProguardConfigFileGenerator {
   def keepOptionsForClassfiles( classfiledirectories: Iterable[String] ) = {
     for {
       file <- classfilesAndJarfilesInDirectories( classfiledirectories )
-      klass <- classesDefined(file)
+      klass <- classesDefined( file )
       classname = klass.s
     } yield {
       f"-keep class $classname {*;}"
@@ -88,10 +64,9 @@ object ProguardConfigFileGenerator {
   import com.restphone.jartender.DependencyAnalyser
 
   def classesDefined( f: File ) = {
-    val items = DependencyAnalyser.buildItemsFromFile(f)
     for {
-      i <- items
-      ProvidesClass(_, _, internalName, _, _, _) <- i.elements
+      i <- DependencyAnalyser.buildItemsFromFile( f )
+      ProvidesClass( _, _, internalName, _, _, _ ) <- i.elements
     } yield internalName.javaIdentifier
   }
 }
