@@ -52,7 +52,8 @@ class CacheTest extends FunSuite with ShouldMatchers {
     val pfi = ProviderFilesInformation( List( providerFile ) )
 
     // We need to put something into the file so it exists,
-    // but it doesn't need to be a real jar
+    // but it doesn't need to be a real jar.  The disk cache
+    // relies on file checksums.gt
 
     val cachefile = new File( tmpdir, "cache.1.cache" )
 
@@ -78,20 +79,3 @@ class CacheTest extends FunSuite with ShouldMatchers {
     cacheResult should equal( some(cacheEntry) )
   }
 }
-//
-//object ProviderFilesInformation {
-//  def apply( files: Traversable[File] ): ProviderFilesInformation = {
-//    val items = files.par map { f => ProviderFileInformation( f.getPath, fileChecksum( f ) ) }
-//    new ProviderFilesInformation( items.seq.toSet )
-//  }
-//
-//case class CacheEntry(
-//  usesItems: Set[UsesElement],
-//  providerFileInformation: ProviderFilesInformation,
-//  jarfilepath: String ) {
-//
-//  def thisCacheEntryProvides( items: Set[UsesElement], providers: ProviderFilesInformation ) = {
-//    items.subsetOf( usesItems ) && ( providers == providerFileInformation )
-//  }
-//}
-//

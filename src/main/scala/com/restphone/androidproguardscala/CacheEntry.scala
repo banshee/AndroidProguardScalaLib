@@ -22,7 +22,6 @@ case class CacheEntry(
     items.subsetOf( usesItems ) && ( providers == providerFileInformation )
   }
 }
-
 case class ProviderFileInformation( filename: String, checksum: String )
 case class ProviderFilesInformation( items: Set[ProviderFileInformation] )
 
