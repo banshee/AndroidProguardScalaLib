@@ -12,14 +12,6 @@ import com.restphone.jartender.DependencyAnalyser
 import com.restphone.jartender.ProvidesClass
 
 object ProguardConfigFileGenerator {
-
-  def fileContentsOrExceptionMessage( f: File ) = {
-    try {
-      Files.toString( f, Charsets.UTF_8 )
-    } catch {
-      case e: IOException => f"# ${e.getLocalizedMessage}".replace( '\n', ' ' )
-    }
-  }
   def generateConfigFileContents( c: ProguardCacheParameters ) = {
     // input jars
     // output jar
@@ -63,5 +55,21 @@ object ProguardConfigFileGenerator {
       i <- DependencyAnalyser.buildItemsFromFile( f )
       ProvidesClass( _, _, internalName, _, _, _ ) <- i.elements
     } yield internalName.javaIdentifier
+  }
+
+  private def fileContentsOrExceptionMessage( f: File ) = {
+    try {
+      Files.toString( f, Charsets.UTF_8 )
+    } catch {
+      case e: IOException => f"# ${e.getLocalizedMessage}".replace( '\n', ' ' )
+    }
+  }
+
+  def extractClassfileElements( c: ProguardCacheParameters ) = {
+    for {
+      f <- classfilesAndJarfilesInDirectories( c.classFiles )
+      i <- DependencyAnalyser.buildItemsFromFile( f )
+      e <- i.elements
+    } yield e
   }
 }

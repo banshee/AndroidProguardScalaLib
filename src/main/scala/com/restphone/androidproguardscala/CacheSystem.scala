@@ -14,5 +14,4 @@ import com.restphone.jartender._
 import com.google.common.base.Charsets
 
 class CacheSystem {
-
 }
