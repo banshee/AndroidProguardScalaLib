@@ -12,7 +12,7 @@ import com.restphone.jartender.DependencyAnalyser
 import com.restphone.jartender.ProvidesClass
 
 object ProguardConfigFileGenerator {
-  def generateConfigFileContents( c: ProguardCacheParameters ) = {
+  def generateConfigFileContents( c: JartenderCacheParameters ) = {
     // input jars
     // output jar
     // classfiles (as library jars)
@@ -65,7 +65,7 @@ object ProguardConfigFileGenerator {
     }
   }
 
-  def extractClassfileElements( c: ProguardCacheParameters ) = {
+  def extractClassfileElements( c: JartenderCacheParameters ) = {
     for {
       f <- classfilesAndJarfilesInDirectories( c.classFiles )
       i <- DependencyAnalyser.buildItemsFromFile( f )

@@ -14,7 +14,7 @@ import com.restphone.androidproguardscala.RichFile._
 
 class ProguardConfigurationGenerationTest extends FunSuite with ShouldMatchers {
   test( "can generate the right proguard config file" ) {
-    val testConf = ProguardCacheParameters(
+    val testConf = JartenderCacheParameters(
       inputJars = Array( "/foo1.jar", "/foo2.jar" ),
       classFiles = Array( """C:\cygwin\home\james\workspace\AndroidProguardScalaLib\bin""" ),
       cacheDir = "/cacheDir1",

@@ -21,7 +21,7 @@ class FullRunTest extends FunSuite with ShouldMatchers {
   test( "should copy the cached version to the destination if no changes were detected" )( pending )
   test( "should update the cache if a new library was created" )( pending )
 
-  val testConfiguration = ProguardCacheParameters(
+  val testConfiguration = JartenderCacheParameters(
     inputJars = Array( "/foo1.jar", "/foo2.jar" ),
     classFiles = Array( """C:\cygwin\home\james\workspace\AndroidProguardScalaLib\bin""" ),
     cacheDir = "/cacheDir1",

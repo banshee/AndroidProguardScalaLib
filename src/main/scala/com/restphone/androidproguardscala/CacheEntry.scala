@@ -12,7 +12,7 @@ case class Cache( entries: Set[CacheEntry] ) {
   def findInCache( items: Set[UsesElement], providers: ProviderFilesInformation ) =
     pentries.find { _.thisCacheEntryProvides( items, providers ) }
 
-  def findInCache( c: ProguardCacheParameters ) = {
+  def findInCache( c: JartenderCacheParameters ) = {
   }
 }
 

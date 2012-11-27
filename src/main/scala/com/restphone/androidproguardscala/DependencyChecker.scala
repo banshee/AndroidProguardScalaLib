@@ -6,7 +6,7 @@ import com.restphone.androidproguardscala.RichFile.tree
 import com.restphone.jartender.DependencyAnalyser
 import com.restphone.jartender.ProvidesClass
 
-class DependencyChecker( c: ProguardCacheParameters ) {
+class DependencyChecker( c: JartenderCacheParameters ) {
   val classfileElements = {
     val classfilesForUsercode = for {
       file <- classfilesAndJarfilesInDirectories( c.classFiles )

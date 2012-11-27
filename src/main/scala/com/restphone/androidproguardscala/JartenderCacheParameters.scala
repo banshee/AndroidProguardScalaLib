@@ -1,6 +1,6 @@
 package com.restphone.androidproguardscala
 
-case class ProguardCacheParameters(
+case class JartenderCacheParameters(
   classFiles: Array[String], // Files containing application code, directories and/or jar files; used in proguard -injar option.  The class files for your application go here.
   cacheDir: String, // Stores the cached jar files and the text files used to calculate signatures.  APS can also clear it on clean builds, so it should be a dedicated directory.
   confDir: String, // Stores ProGuard configuration files created during builds.  If you put a "/proguard_additions.conf" file in this directory, the contents of the file will be included in the proguard file used for the build (specified by proguardProcessedConfFile). 
