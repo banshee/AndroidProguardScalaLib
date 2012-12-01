@@ -4,3 +4,5 @@ lib
 .cache
 plugins/*.jar
 .settings
+project
+target
