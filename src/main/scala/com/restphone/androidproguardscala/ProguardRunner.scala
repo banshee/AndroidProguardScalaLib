@@ -1,5 +1,7 @@
 package com.restphone.androidproguardscala
 
-class ProguardRunner {
+import proguard._
 
+class ProguardRunner(configFile: File) {
+  val c = new ConfigurationParser(configFile)
 }
