@@ -73,9 +73,9 @@ class CacheTest extends FunSuite with ShouldMatchers {
     val bytesFromCacheFile = Files.toByteArray( cachefile )
 
     val cacheReadFromFile: Option[Cache] = SerializableUtilities.byteArrayToObject( bytesFromCacheFile )
+    cacheReadFromFile should be ('defined)
 
-    val cacheResult = cacheReadFromFile flatMap { _.findInCache( Set( usesBoojum ), pfi ) }
-
+    val cacheResult = cacheReadFromFile.get.findInCache( Set( usesBoojum ), pfi )
     cacheResult should equal( some(cacheEntry) )
   }
 }

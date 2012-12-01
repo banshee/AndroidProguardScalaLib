@@ -11,9 +11,6 @@ case class Cache( entries: Set[CacheEntry] ) {
   private val pentries = entries.par
   def findInCache( items: Set[UsesElement], providers: ProviderFilesInformation ) =
     pentries.find { _.thisCacheEntryProvides( items, providers ) }
-
-  def findInCache( c: JartenderCacheParameters ) = {
-  }
 }
 
 case class CacheEntry(

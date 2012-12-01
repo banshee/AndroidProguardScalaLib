@@ -12,7 +12,7 @@ import com.restphone.jartender.DependencyAnalyser
 import com.restphone.jartender.ProvidesClass
 
 object ProguardConfigFileGenerator {
-  def generateConfigFileContents( c: JartenderCacheParameters ) = {
+  def generateConfigFileContents( cache: CacheSystem, c: JartenderCacheParameters ) = {
     // input jars
     // output jar
     // classfiles (as library jars)
@@ -29,33 +29,15 @@ object ProguardConfigFileGenerator {
     val proguardAdditionsFile = Array( "# Inserting proguard additions file here", fileContentsOrExceptionMessage( new File( c.proguardAdditionsFile ) ) )
     val builtinOptions = Array( c.proguardDefaults )
 
-    val combined = inputjars ++ outputjar ++ classfiles ++ libraryjars ++ builtinOptions ++ proguardAdditionsFile ++ keepOptionsForClassfiles( c.classFiles )
+    val combined = inputjars ++ outputjar ++ classfiles ++ libraryjars ++ builtinOptions ++ proguardAdditionsFile ++ keepOptionsForClassfiles( cache, c )
 
     combined.mkString( "\n" )
   }
 
-  def classfilesAndJarfilesInDirectories( classfiledirectories: Iterable[String] ) = for {
-    classfileDirAsString <- classfiledirectories
-    classfiledir = new File( classfileDirAsString )
-    cf <- tree( classfiledir ) if ( cf.getName.endsWith( ".class" ) || cf.getName.endsWith( ".jar" ) )
-  } yield cf
-
-  def keepOptionsForClassfiles( classfiledirectories: Iterable[String] ) = {
-    for {
-      file <- classfilesAndJarfilesInDirectories( classfiledirectories )
-      klass <- classesDefined( file )
-      classname = klass.s
-    } yield {
-      f"-keep class $classname {*;}"
-    }
-  }
-
-  def classesDefined( f: File ) = {
-    for {
-      i <- DependencyAnalyser.buildItemsFromFile( f )
-      ProvidesClass( _, _, internalName, _, _, _ ) <- i.elements
-    } yield internalName.javaIdentifier
-  }
+  def keepOptionsForClassfiles( cache: CacheSystem, p: JartenderCacheParameters ) =
+    cache.elementsFromClassfiles( p ) collect
+      { case ProvidesClass( _, _, internalName, _, _, _ ) => internalName.javaIdentifier } map
+      { x => f"-keep class $x {*;}" }
 
   private def fileContentsOrExceptionMessage( f: File ) = {
     try {
@@ -63,13 +45,5 @@ object ProguardConfigFileGenerator {
     } catch {
       case e: IOException => f"# ${e.getLocalizedMessage}".replace( '\n', ' ' )
     }
-  }
-
-  def extractClassfileElements( c: JartenderCacheParameters ) = {
-    for {
-      f <- classfilesAndJarfilesInDirectories( c.classFiles )
-      i <- DependencyAnalyser.buildItemsFromFile( f )
-      e <- i.elements
-    } yield e
   }
 }
