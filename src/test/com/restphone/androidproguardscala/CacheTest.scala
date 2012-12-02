@@ -12,7 +12,10 @@ import com.google.common.io.Files
 import com.restphone.jartender.UsesClass
 import com.restphone.jartender._
 import com.google.common.base.Charsets
+import org.junit.runner.RunWith
+import org.scalatest.junit.JUnitRunner
 
+@RunWith(classOf[JUnitRunner])
 class CacheTest extends FunSuite with ShouldMatchers {
   test( "can generate cache file" ) {
     val tmpdir = Files.createTempDir
@@ -36,13 +39,10 @@ class CacheTest extends FunSuite with ShouldMatchers {
 
     Files.write( bytesForCache, cachefile )
 
-    val bytesFromFile = Files.toByteArray( file1 )
-
-    println( bytesForCache.size )
+    val bytesFromFile = Files.toByteArray( cachefile )
 
     val tst: Option[Cache] = SerializableUtilities.byteArrayToObject( bytesFromFile )
-
-    println( "cache is " + tst )
+    tst should be ('defined)
   }
 
   test( "can find an item in the cache" ) {

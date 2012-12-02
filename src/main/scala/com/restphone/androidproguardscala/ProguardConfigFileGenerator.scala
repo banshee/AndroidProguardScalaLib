@@ -34,6 +34,12 @@ object ProguardConfigFileGenerator {
     combined.mkString( "\n" )
   }
 
+  def generateConfigFile( cache: CacheSystem, c: JartenderCacheParameters, f: File ) = {
+    val contents = generateConfigFileContents(cache, c)
+    Files.write(contents, f, Charsets.UTF_8)
+    f
+  }
+  
   def keepOptionsForClassfiles( cache: CacheSystem, p: JartenderCacheParameters ) =
     cache.elementsFromClassfiles( p ) collect
       { case ProvidesClass( _, _, internalName, _, _, _ ) => internalName.javaIdentifier } map

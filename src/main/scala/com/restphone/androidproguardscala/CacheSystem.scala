@@ -11,10 +11,14 @@ import com.restphone.jartender.DependencyAnalyser
 import com.restphone.jartender.ProvidesClass
 import com.restphone.jartender.ProvidesElement
 import com.restphone.jartender.UsesElement
+import scalaz._
+import Scalaz._
+
+sealed abstract class CacheResponse
+case class ExistingLibrary( p : JartenderCacheParameters, f : File ) extends CacheResponse
+case class BuiltLibrary( p : JartenderCacheParameters, f : File ) extends CacheResponse
 
 class CacheSystem {
-  private var currentCache : Cache = new Cache( Set() )
-
   def findInCache( p : JartenderCacheParameters ) = {
     val elementsUsed = elementsFromClassfiles( p )
     val elementsProvided = elementsFromInputFiles( p )
@@ -25,9 +29,18 @@ class CacheSystem {
     currentCache.findInCache( relevantDependencies, providerFiles )
   }
 
-  def libraryMatchingParameters( p : JartenderCacheParameters ) : Option[ File ] = {
+  def addCacheEntry( c : CacheEntry ) = {
+    currentCache = new Cache( currentCache.entries + c )
+  }
+
+  def cacheEntryForProcessedLibrary( p : JartenderCacheParameters, f : File ) = {
+    CacheEntry( usesItems = usesElements( p ).seq, providerFileInformation = ProviderFilesInformation( p ), jarfilepath = f.getPath )
+  }
+
+  def libraryMatchingParameters( p : JartenderCacheParameters ) : Option[ CacheResponse ] = {
     val cacheEntry = currentCache.findInCache( usesElements( p ).seq, ProviderFilesInformation( p ) )
-    cacheEntry map { x => new File( x.jarfilepath ) }
+    val t: ValidationNEL = null
+    cacheEntry map { x => new File( x.jarfilepath ) } map { ExistingLibrary( p, _ ) }
   }
 
   def elementsFromClassfiles( p : JartenderCacheParameters ) = elementsFromFiles( jvmFilesInDirectories( p.classFiles ) )
@@ -66,4 +79,6 @@ class CacheSystem {
       case h :: t if jvmExtensions.contains( h.toLowerCase ) && !f.isDirectory => f
     }
   }
+
+  private var currentCache : Cache = new Cache( Set() )
 }
