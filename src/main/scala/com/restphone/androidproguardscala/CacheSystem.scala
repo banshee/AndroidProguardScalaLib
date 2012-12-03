@@ -39,7 +39,6 @@ class CacheSystem {
 
   def libraryMatchingParameters( p : JartenderCacheParameters ) : Option[ CacheResponse ] = {
     val cacheEntry = currentCache.findInCache( usesElements( p ).seq, ProviderFilesInformation( p ) )
-    val t: ValidationNEL = null
     cacheEntry map { x => new File( x.jarfilepath ) } map { ExistingLibrary( p, _ ) }
   }
 

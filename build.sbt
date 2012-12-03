@@ -24,7 +24,10 @@ transitiveClassifiers := Seq("sources")
 
 libraryDependencies ++= Seq(
   "com.restphone" % "javasignatureparser_2.10" % "0.3-SNAPSHOT",
-  "com.restphone" % "jartender_2.10" % "0.2-SNAPSHOT"
+  "com.restphone" % "jartender_2.10" % "0.2-SNAPSHOT",
+  "org.scalaz" % "scalaz-concurrent_2.10.0-SNAPSHOT" % "7.0-SNAPSHOT",
+  "com.google.guava" % "guava" % "13.0.1",
+  "net.sf.proguard" % "proguard-base" % "4.8"
 )
 
 libraryDependencies ++= Seq(

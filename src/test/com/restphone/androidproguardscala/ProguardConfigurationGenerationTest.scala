@@ -22,13 +22,8 @@ class ProguardConfigurationGenerationTest extends FunSuite with ShouldMatchers {
       inputJars = Array( "/foo1.jar", "/foo2.jar" ),
       classFiles = Array( """C:\cygwin\home\james\workspace\AndroidProguardScalaLib\bin""" ),
       cacheDir = "/cacheDir1",
-      confDir = "/confDir1",
       proguardProcessedConfFile = "proguardProcessedConfFile",
-
-      cachedJar = "cachedJar",
-
       outputJar = "outputJar",
-
       libraryJars = Array( "android.jar", "jar1.jar" ),
       proguardDefaults = "defaults here",
       proguardAdditionsFile = "additionsFile" )

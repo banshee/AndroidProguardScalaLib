@@ -12,7 +12,7 @@ import com.restphone.jartender.DependencyAnalyser
 import com.restphone.jartender.ProvidesClass
 
 object ProguardConfigFileGenerator {
-  def generateConfigFileContents( cache: CacheSystem, c: JartenderCacheParameters ) = {
+  def generateConfigFileContents( cache: CacheSystem, c: JartenderCacheParameters, cachedJarLocation: File ) = {
     // input jars
     // output jar
     // classfiles (as library jars)
@@ -23,7 +23,7 @@ object ProguardConfigFileGenerator {
     def quote( s: String ) = "\"" + s + "\""
 
     val inputjars = c.inputJars map quote map { s => f"-injars $s(!META-INF/MANIFEST.MF)" }
-    val outputjar = Array( "-outjars " + quote( c.outputJar ) )
+    val outputjar = Array( "-outjars " + quote( cachedJarLocation.getPath ) )
     val classfiles = c.classFiles map quote map { s => f"-injars $s" }
     val libraryjars = c.libraryJars map quote map { s => f"-libraryjars $s" }
     val proguardAdditionsFile = Array( "# Inserting proguard additions file here", fileContentsOrExceptionMessage( new File( c.proguardAdditionsFile ) ) )
@@ -34,8 +34,8 @@ object ProguardConfigFileGenerator {
     combined.mkString( "\n" )
   }
 
-  def generateConfigFile( cache: CacheSystem, c: JartenderCacheParameters, f: File ) = {
-    val contents = generateConfigFileContents(cache, c)
+  def generateConfigFile( cache: CacheSystem, c: JartenderCacheParameters, cachedJarLocation: File, f: File ) = {
+    val contents = generateConfigFileContents(cache, c, cachedJarLocation)
     Files.write(contents, f, Charsets.UTF_8)
     f
   }
