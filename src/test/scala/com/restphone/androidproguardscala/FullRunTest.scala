@@ -20,29 +20,46 @@ import org.scalatest.junit.JUnitRunner
 class FullRunTest extends FunSuite with ShouldMatchers {
   test( "should find an existing matching library" ) {
     val cs = new CacheSystem
-    val library = cs.libraryMatchingParameters( testConfiguration )
+    val library = cs.libraryMatchingParameters( createTestConfiguration )
     library should be( 'defined )
   }
 
+  test("should nsark") {
+    val x = DependencyAnalyser.buildItemsFromFile(new File(getResource("jarfiles/libjar.jar").get))
+    println(x)
+    println("adsasfasdf")
+  }
+  
   def validDirectory( f: File, failureMsg: String ) = if ( f.exists && f.isDirectory ) f.success else ( f.getPath + " is not a valid directory: " + failureMsg ).failure
   def convertStringToValidatedDirectory( s: String, failureMsg: String = "" ) = validDirectory( new File( s ), failureMsg )
 
+  val extractFilePathExpr = """file:/(.*)""".r
+  def getResource(s: String) = {
+    val root = Option(Thread.currentThread.getContextClassLoader.getResource(s))
+    val result = root.getOrElse("").toString match {
+      case extractFilePathExpr(f) => f.some
+      case _ => None
+    }
+    result
+  }
+  
   test( "should build the library if necessary, keeping a cache copy and also putting it in the destination" ) {
+    val conf = createTestConfiguration
     val cs = new CacheSystem
-    val library = cs.libraryMatchingParameters( testConfiguration )
+    val library = cs.libraryMatchingParameters( conf )
     library should not be ( 'defined )
     library getOrElse {
-      val cacheDir = validDirectory( new File( testConfiguration.cacheDir ), "cache directory" )
+      val cacheDir = validDirectory( new File( conf.cacheDir ), "cache directory" )
       val configfilename = File.createTempFile( "jartender_proguard", ".conf", cacheDir.getOrElse( new File( "/tmp" ) ) )
       val checksum = "xxx"
       val cachedJar = File.createTempFile( f"jartender_cache_${checksum}", ".jar", cacheDir.getOrElse( new File( "/tmp" ) ) )
-      val configFile = ProguardConfigFileGenerator.generateConfigFile( cs, testConfiguration, cachedJar, configfilename )
+      val configFile = ProguardConfigFileGenerator.generateConfigFile( cs, conf, cachedJar, configfilename )
       val p = new ProguardRunner( configfilename )
       p.execute
-      val newCacheEntry = cs.cacheEntryForProcessedLibrary( testConfiguration, new File( testConfiguration.outputJar ) )
+      val newCacheEntry = cs.cacheEntryForProcessedLibrary( conf, new File( conf.outputJar ) )
       cs.addCacheEntry( newCacheEntry )
-      if ( !Files.equal( cachedJar, testConfiguration.outputJar ) ) {
-        Files.copy( cachedJar, testConfiguration.outputJar )
+      if ( !Files.equal( cachedJar, new File(conf.outputJar) ) ) {
+        Files.copy( cachedJar, new File(conf.outputJar) )
       }
     }
   }
@@ -57,14 +74,13 @@ class FullRunTest extends FunSuite with ShouldMatchers {
 
   test( "should copy the cached version to the destination if no changes were detected" )( pending )
 
-  val testConfiguration = JartenderCacheParameters(
-    inputJars = Array( "/foo1.jar", "/foo2.jar" ),
-    classFiles = Array( """C:\cygwin\home\james\workspace\AndroidProguardScalaLib\bin""" ),
-    cacheDir = "/cacheDir1",
+  val createTestConfiguration = JartenderCacheParameters(
+    inputJars = getResource("jarfiles/libjar.jar").toArray,
+    classFiles = getResource(".").toArray,
+    cacheDir = Files.createTempDir.toString,
     proguardProcessedConfFile = "proguardProcessedConfFile",
-    outputJar = "outputJar",
-    cachedJar = "cachedJar",
-    libraryJars = Array( "android.jar", "jar1.jar" ),
-    proguardDefaults = "defaults here",
+    outputJar = new File(Files.createTempDir, "outputjar.jar").getPath,
+    libraryJars = Array.empty,
+    proguardDefaults = "# defaults here",
     proguardAdditionsFile = "additionsFile" )
 }

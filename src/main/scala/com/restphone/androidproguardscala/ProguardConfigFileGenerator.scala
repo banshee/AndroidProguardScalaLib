@@ -43,7 +43,7 @@ object ProguardConfigFileGenerator {
   def keepOptionsForClassfiles( cache: CacheSystem, p: JartenderCacheParameters ) =
     cache.elementsFromClassfiles( p ) collect
       { case ProvidesClass( _, _, internalName, _, _, _ ) => internalName.javaIdentifier } map
-      { x => f"-keep class $x {*;}" }
+      { x => f"-keep class ${x.s} {*;}" }
 
   private def fileContentsOrExceptionMessage( f: File ) = {
     try {
