@@ -7,16 +7,16 @@ import com.restphone.jartender.DependencyAnalyser
 import com.restphone.jartender.ProvidesClass
 
 class DependencyChecker( c: JartenderCacheParameters ) {
-  val classfileElements = {
-    val classfilesForUsercode = for {
-      file <- classfilesAndJarfilesInDirectories( c.classFiles )
-      i <- DependencyAnalyser.buildItemsFromFile( file )
-    } yield i
-    val classfilesForLibraryJars = for {
-      file <- classfilesAndJarfilesInDirectories( c.libraryJars )
-      i <- DependencyAnalyser.buildItemsFromFile( file )
-    } yield i
-  }
+//  val classfileElements = {
+//    val classfilesForUsercode = for {
+//      file <- classfilesAndJarfilesInDirectories( c.classFiles )
+//      i <- DependencyAnalyser.buildItemsFromFile( file )
+//    } yield i
+//    val classfilesForLibraryJars = for {
+//      file <- classfilesAndJarfilesInDirectories( c.libraryJars )
+//      i <- DependencyAnalyser.buildItemsFromFile( file )
+//    } yield i
+//  }
 
   def classfilesAndJarfilesInDirectories( classfiledirectories: Iterable[String] ) = for {
     classfileDirAsString <- classfiledirectories

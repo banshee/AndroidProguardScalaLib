@@ -29,22 +29,26 @@ object ProguardConfigFileGenerator {
     val proguardAdditionsFile = Array( "# Inserting proguard additions file here", fileContentsOrExceptionMessage( new File( c.proguardAdditionsFile ) ) )
     val builtinOptions = Array( c.proguardDefaults )
 
-    val combined = inputjars ++ outputjar ++ classfiles ++ libraryjars ++ builtinOptions ++ proguardAdditionsFile ++ keepOptionsForClassfiles( cache, c )
+    keepOptionsForClassfiles( cache, c ) map { keepOptions =>
+      val combined = inputjars ++ outputjar ++ classfiles ++ libraryjars ++ builtinOptions ++ proguardAdditionsFile ++ keepOptions
 
-    combined.mkString( "\n" )
+      combined.mkString( "\n" )
+    }
   }
 
   def generateConfigFile( cache: CacheSystem, c: JartenderCacheParameters, cachedJarLocation: File, f: File ) = {
-    val contents = generateConfigFileContents(cache, c, cachedJarLocation)
-    Files.write(contents, f, Charsets.UTF_8)
-    f
+    generateConfigFileContents( cache, c, cachedJarLocation ) map { contents =>
+      Files.write( contents, f, Charsets.UTF_8 )
+      f
+    }
   }
-  
-  def keepOptionsForClassfiles( cache: CacheSystem, p: JartenderCacheParameters ) =
-    cache.elementsFromClassfiles( p ) collect
-      { case ProvidesClass( _, _, internalName, _, _, _ ) => internalName.javaIdentifier } map
-      { x => f"-keep class ${x.s} {*;}" }
 
+  def keepOptionsForClassfiles( cache: CacheSystem, p: JartenderCacheParameters ) =
+    cache.elementsFromClassfiles( p ) map {
+      _ collect
+        { case ProvidesClass( _, _, internalName, _, _, _ ) => internalName.javaIdentifier } map
+        { x => f"-keep class ${x.s} {*;}" }
+    }
   private def fileContentsOrExceptionMessage( f: File ) = {
     try {
       Files.toString( f, Charsets.UTF_8 )

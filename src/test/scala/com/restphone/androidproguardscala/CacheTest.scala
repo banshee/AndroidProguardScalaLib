@@ -12,10 +12,8 @@ import com.google.common.io.Files
 import com.restphone.jartender.UsesClass
 import com.restphone.jartender._
 import com.google.common.base.Charsets
-import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 
-@RunWith(classOf[JUnitRunner])
 class CacheTest extends FunSuite with ShouldMatchers {
   test( "can generate cache file" ) {
     val tmpdir = Files.createTempDir
@@ -27,10 +25,11 @@ class CacheTest extends FunSuite with ShouldMatchers {
     val usesSnark = UsesClass( JavaIdentifier( "com.restphone.Snark" ) )
     val usesBoojum = UsesClass( JavaIdentifier( "com.restphone.Boojum" ) )
 
-    val pfi = ProviderFilesInformation( List( file1 ) )
+    val pfi = ProviderFilesInformation.createFromFiles( List( file1 ) )
+    pfi should be ('success)
 
     val cachent = CacheEntry( usesItems = Set( usesSnark, usesBoojum ),
-      providerFileInformation = pfi,
+      providerFileInformation = pfi.toOption.get,
       jarfilepath = file1.getPath )
 
     val cache = Cache( Set( cachent ) )
@@ -49,7 +48,9 @@ class CacheTest extends FunSuite with ShouldMatchers {
     val tmpdir = Files.createTempDir
     val providerFile = new File( tmpdir, "one.jar" )
     Files.write( "from", providerFile, Charsets.UTF_8 )
-    val pfi = ProviderFilesInformation( List( providerFile ) )
+    
+    val pfi = ProviderFilesInformation.createFromFiles( List( providerFile ) )
+    pfi should be ('success)
 
     // We need to put something into the file so it exists,
     // but it doesn't need to be a real jar.  The disk cache
@@ -61,7 +62,7 @@ class CacheTest extends FunSuite with ShouldMatchers {
     val usesBoojum = UsesClass( JavaIdentifier( "com.restphone.Boojum" ) )
 
     val cacheEntry = CacheEntry( usesItems = Set( usesSnark, usesBoojum ),
-      providerFileInformation = pfi,
+      providerFileInformation = pfi.toOption.get,
       jarfilepath = providerFile.getPath )
 
     val cache = Cache( Set( cacheEntry ) )
@@ -75,7 +76,7 @@ class CacheTest extends FunSuite with ShouldMatchers {
     val cacheReadFromFile: Option[Cache] = SerializableUtilities.byteArrayToObject( bytesFromCacheFile )
     cacheReadFromFile should be ('defined)
 
-    val cacheResult = cacheReadFromFile.get.findInCache( Set( usesBoojum ), pfi )
+    val cacheResult = cacheReadFromFile.get.findInCache( Set( usesBoojum ), pfi.toOption.get )
     cacheResult should equal( some(cacheEntry) )
   }
 }

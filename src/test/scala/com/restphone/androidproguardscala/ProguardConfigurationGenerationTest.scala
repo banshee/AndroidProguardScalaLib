@@ -12,10 +12,6 @@ import Scalaz._
 import java.io.File
 import com.restphone.androidproguardscala.RichFile._
 
-import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner
-
-@RunWith(classOf[JUnitRunner])
 class ProguardConfigurationGenerationTest extends FunSuite with ShouldMatchers {
   test( "can generate the right proguard config file" ) {
     val testConf = JartenderCacheParameters(

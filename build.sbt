@@ -23,17 +23,13 @@ externalResolvers := Seq(
 transitiveClassifiers := Seq("sources")
 
 libraryDependencies ++= Seq(
-  "com.restphone" % "javasignatureparser_2.10" % "0.3-SNAPSHOT",
   "com.restphone" % "jartender_2.10" % "0.2-SNAPSHOT",
-  "org.scalaz" % "scalaz-concurrent_2.10.0-SNAPSHOT" % "7.0-SNAPSHOT",
-  "com.google.guava" % "guava" % "13.0.1",
+  "org.scalaz" % "scalaz-core_2.10.0-RC3" % "7.0.0-M5",
   "net.sf.proguard" % "proguard-base" % "4.8"
 )
 
 libraryDependencies ++= Seq(
-  "org.scalatest" % "scalatest_2.10.0-RC3" % "2.0.M5-B1",
-  "junit" % "junit" % "4.8.1" % "test",
-  "org.scalacheck" % "scalacheck_2.10" % "1.10.1-SNAPSHOT" % "test"
+  "org.scalatest" % "scalatest_2.10.0-RC3" % "2.0.M5-B1"
 )
 
 publishTo <<= version { (v: String) =>

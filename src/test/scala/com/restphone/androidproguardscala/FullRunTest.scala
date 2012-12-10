@@ -13,25 +13,14 @@ import com.restphone.jartender.UsesClass
 import com.restphone.jartender._
 import com.google.common.base.Charsets
 
-import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner
-
-@RunWith( classOf[JUnitRunner] )
 class FullRunTest extends FunSuite with ShouldMatchers {
   test( "should find an existing matching library" ) {
     val cs = new CacheSystem
-    val library = cs.libraryMatchingParameters( createTestConfiguration )
+    val library = cs.findInCache( createTestConfiguration )
     library should be( 'defined )
   }
 
-  test("should nsark") {
-    val x = DependencyAnalyser.buildItemsFromFile(new File(getResource("jarfiles/libjar.jar").get))
-    println(x)
-    println("adsasfasdf")
-  }
-  
   def validDirectory( f: File, failureMsg: String ) = if ( f.exists && f.isDirectory ) f.success else ( f.getPath + " is not a valid directory: " + failureMsg ).failure
-  def convertStringToValidatedDirectory( s: String, failureMsg: String = "" ) = validDirectory( new File( s ), failureMsg )
 
   val extractFilePathExpr = """file:/(.*)""".r
   def getResource(s: String) = {
@@ -46,7 +35,7 @@ class FullRunTest extends FunSuite with ShouldMatchers {
   test( "should build the library if necessary, keeping a cache copy and also putting it in the destination" ) {
     val conf = createTestConfiguration
     val cs = new CacheSystem
-    val library = cs.libraryMatchingParameters( conf )
+    val library = cs.findInCache( conf )
     library should not be ( 'defined )
     library getOrElse {
       val cacheDir = validDirectory( new File( conf.cacheDir ), "cache directory" )
@@ -56,21 +45,22 @@ class FullRunTest extends FunSuite with ShouldMatchers {
       val configFile = ProguardConfigFileGenerator.generateConfigFile( cs, conf, cachedJar, configfilename )
       val p = new ProguardRunner( configfilename )
       p.execute
-      val newCacheEntry = cs.cacheEntryForProcessedLibrary( conf, new File( conf.outputJar ) )
-      cs.addCacheEntry( newCacheEntry )
-      if ( !Files.equal( cachedJar, new File(conf.outputJar) ) ) {
-        Files.copy( cachedJar, new File(conf.outputJar) )
+      cs.cacheEntryForProcessedLibrary( conf, new File( conf.outputJar ) ) map { newCacheEntry =>
+        cs.addCacheEntry( newCacheEntry )
+        if ( !Files.equal( cachedJar, new File( conf.outputJar ) ) ) {
+          Files.copy( cachedJar, new File( conf.outputJar ) )
+        }
       }
     }
   }
 
-  test( "full cycle" ) {
-    val ops =
-      "seq[existing jar that matches, a new built jar that also gets inserted into the cache]"
-    "find the first match"
-    "copy the first match into outputJar"
-    "return the status"
-  }
+//  test( "full cycle" ) {
+//    val ops =
+//      "seq[existing jar that matches, a new built jar that also gets inserted into the cache]"
+//    "find the first match"
+//    "copy the first match into outputJar"
+//    "return the status"
+//  }
 
   test( "should copy the cached version to the destination if no changes were detected" )( pending )
 
