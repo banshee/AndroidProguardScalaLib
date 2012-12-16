@@ -15,18 +15,54 @@ import scalaz._
 import Scalaz._
 import com.restphone.jartender.ClassfileElement
 import com.restphone.jartender.FileFailureValidation._
+import com.restphone.androidproguardscala.RichFile._
+import com.restphone.jartender.JavaIdentifier
+import com.restphone.jartender.FileFailureValidation._
 
 sealed abstract class CacheResponse {
-  def f: File
+  def c: CacheEntry
 }
-case class ExistingLibrary( p: JartenderCacheParameters, f: File ) extends CacheResponse
-case class BuiltLibrary( p: JartenderCacheParameters, f: File ) extends CacheResponse
+case class ExistingLibrary( p: JartenderCacheParameters, c: CacheEntry ) extends CacheResponse
+case class BuiltLibrary( p: JartenderCacheParameters, c: CacheEntry ) extends CacheResponse
 
 class CacheSystem {
-  def findInCache( p: JartenderCacheParameters ) =
+  def execute( conf: JartenderCacheParameters ): FileFailureValidation[CacheResponse] = {
+    // A success on findInCache just means that we didn't throw an
+    // exception - it still could be a miss.  Missing is fine; we can continue.
+    // An exception isn't fine; we need to stop and report the exception.
+    findInCache( conf ) match {
+      case Failure( x ) => Failure( x ) // two different failure types
+      case Success( Some( x ) ) => x.success
+      case Success( None ) => createMissingEntry( conf )
+    }
+  }
+
+  def createMissingEntry( conf: JartenderCacheParameters ): FileFailureValidation[BuiltLibrary] = {
+    for {
+      cacheDir <- validDirectory( new File( conf.cacheDir ), "cache directory" )
+      configfilename <- validatedTempFile( "temp file for configuration", "jartender_proguard", ".conf", cacheDir )
+      cachedJar <- validatedTempFile( "cachedJar file", "jartender_cache_", ".jar", cacheDir )
+      configFile <- ProguardConfigFileGenerator.generateConfigFile( this, conf, cachedJar, configfilename )
+      proguardOutput <- new ProguardRunner( configfilename ).execute
+      newCacheEntry <- cacheEntryForProcessedLibrary( conf, new File( conf.outputJar ) )
+      installedCacheEntry <- addCacheEntry( newCacheEntry )
+      installedOutputJar <- installOutputJar( cachedJar, conf )
+    } yield BuiltLibrary( conf, newCacheEntry )
+  }
+
+  def installOutputJar( cachedJar: File, conf: JartenderCacheParameters ): FileFailureValidation[String] =
+    convertIoExceptionToValidation( "installing output jar" ) {
+      if ( !Files.equal( cachedJar, new File( conf.outputJar ) ) ) {
+        Files.copy( cachedJar, new File( conf.outputJar ) )
+      }
+      "installed jar".success
+    }
+
+  def findInCache( p: JartenderCacheParameters ): FileFailureValidation[Option[CacheResponse]] =
     buildUsersAndProviders( p ) map { x =>
       val relevantDependencies = DependencyAnalyser.buildMatchingDependencies( x.providers, x.users )
-      currentCache.findInCache( relevantDependencies, x.providerFiles )
+      val cacheEntry = currentCache.findInCache( relevantDependencies, x.providerFiles )
+      cacheEntry map { ExistingLibrary( p, _ ) }
     }
 
   case class UsersAndProviders( providers: Set[ProvidesElement], users: Set[UsesElement], providerFiles: ProviderFilesInformation )
@@ -43,13 +79,14 @@ class CacheSystem {
       }
   }
 
-  def providerFiles( p: JartenderCacheParameters ) = ProviderFilesInformation.createFromFiles( p.inputJars map { new File( _ ) } )
+  def providerFiles( p: JartenderCacheParameters ) = ProviderFilesInformation.createFromFiles( p.inputJars map stringToFile )
 
-  def addCacheEntry( c: CacheEntry ) = {
+  def addCacheEntry( c: CacheEntry ): FileFailureValidation[Cache] = {
     currentCache = new Cache( currentCache.entries + c )
+    currentCache.success
   }
 
-  def cacheEntryForProcessedLibrary( p: JartenderCacheParameters, f: File ) =
+  def cacheEntryForProcessedLibrary( p: JartenderCacheParameters, f: File ): FileFailureValidation[CacheEntry] =
     buildUsersAndProviders( p ) map { x => CacheEntry( usesItems = x.users, providerFileInformation = x.providerFiles, jarfilepath = f.getPath ) }
 
   def elementsFromClassfiles( p: JartenderCacheParameters ) = elementsFromFiles( jvmFilesInDirectories( p.classFiles ) )
@@ -61,13 +98,15 @@ class CacheSystem {
     IsJvmFile( cf ) <- tree( classfiledir )
   } yield cf
 
-  def elementsFromFiles( fs: Traversable[File] ) = fs.toList map elementsFromFile suml
+  def elementsFromFiles( fs: Traversable[File] ): FileFailureValidation[List[ClassfileElement]] =
+    fs.toList map elementsFromFile suml
 
   def elementsFromFile( f: File ): FileFailureValidation[List[ClassfileElement]] = {
     DependencyAnalyser.buildItemsFromFile( f ) map { _.elements }
   }
 
-  def classesDefined( fs: Traversable[File] ) = elementsFromFiles( fs ) map { _ collect { case ProvidesClass( _, _, internalName, _, _, _ ) => internalName.javaIdentifier } }
+  def classesDefined( fs: Traversable[File] ): FileFailureValidation[List[JavaIdentifier]] =
+    elementsFromFiles( fs ) map { _ collect { case ProvidesClass( _, _, internalName, _, _, _ ) => internalName.javaIdentifier } }
 
   private def fileContentsOrExceptionMessage( f: File ) = {
     try {

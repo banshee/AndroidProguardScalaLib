@@ -11,7 +11,9 @@ import com.restphone.androidproguardscala.RichFile._
 import com.google.common.io.Files
 import com.restphone.jartender.UsesClass
 import com.restphone.jartender._
+import com.restphone.jartender.FileFailureValidation._
 import com.google.common.base.Charsets
+import scala.PartialFunction._
 
 class FullRunTest extends FunSuite with ShouldMatchers {
   test( "should find an existing matching library" ) {
@@ -20,18 +22,12 @@ class FullRunTest extends FunSuite with ShouldMatchers {
     library should be( 'defined )
   }
 
-  def validDirectory( f: File, failureMsg: String ) = if ( f.exists && f.isDirectory ) f.success else ( f.getPath + " is not a valid directory: " + failureMsg ).failure
-
-  val extractFilePathExpr = """file:/(.*)""".r
-  def getResource(s: String) = {
-    val root = Option(Thread.currentThread.getContextClassLoader.getResource(s))
-    val result = root.getOrElse("").toString match {
-      case extractFilePathExpr(f) => f.some
-      case _ => None
-    }
-    result
+  def getResource( s: String ) = {
+    val extractFilePathExpr = """file:/(.*)""".r
+    val root = Option( Thread.currentThread.getContextClassLoader.getResource( s ) )
+    root flatMap { condOpt( _ ) { case extractFilePathExpr( f ) => f } }
   }
-  
+
   test( "should build the library if necessary, keeping a cache copy and also putting it in the destination" ) {
     val conf = createTestConfiguration
     val cs = new CacheSystem
@@ -54,22 +50,22 @@ class FullRunTest extends FunSuite with ShouldMatchers {
     }
   }
 
-//  test( "full cycle" ) {
-//    val ops =
-//      "seq[existing jar that matches, a new built jar that also gets inserted into the cache]"
-//    "find the first match"
-//    "copy the first match into outputJar"
-//    "return the status"
-//  }
+  //  test( "full cycle" ) {
+  //    val ops =
+  //      "seq[existing jar that matches, a new built jar that also gets inserted into the cache]"
+  //    "find the first match"
+  //    "copy the first match into outputJar"
+  //    "return the status"
+  //  }
 
   test( "should copy the cached version to the destination if no changes were detected" )( pending )
 
   val createTestConfiguration = JartenderCacheParameters(
-    inputJars = getResource("jarfiles/libjar.jar").toArray,
-    classFiles = getResource(".").toArray,
+    inputJars = getResource( "jarfiles/libjar.jar" ).toArray,
+    classFiles = getResource( "." ).toArray,
     cacheDir = Files.createTempDir.toString,
     proguardProcessedConfFile = "proguardProcessedConfFile",
-    outputJar = new File(Files.createTempDir, "outputjar.jar").getPath,
+    outputJar = new File( Files.createTempDir, "outputjar.jar" ).getPath,
     libraryJars = Array.empty,
     proguardDefaults = "# defaults here",
     proguardAdditionsFile = "additionsFile" )

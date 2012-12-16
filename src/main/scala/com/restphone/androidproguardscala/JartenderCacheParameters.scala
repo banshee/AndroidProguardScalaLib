@@ -8,5 +8,5 @@ case class JartenderCacheParameters(
   inputJars: Array[String], // Written to the proguard file as -injar options, before -outjar.  (Order in the proguard file is what makes only scala libraries appear in the output.)
   libraryJars: Array[String] = Array(), // passed to proguard -libraryjars.  Should always include android.jar.
   proguardDefaults: String = "", // an arbitrary string added to the proguard conf file
-  proguardAdditionsFile: String = "", // Path to file added to configuration - can be ""
-  logger: ProvidesLogging = ProvidesLogging.NullLogger)
+  proguardAdditionsFile: String = "" // Path to file added to configuration - can be ""
+)

@@ -57,6 +57,8 @@ object RichFile {
   def joinFile( fs: List[File] ) = fs.mkString( File.pathSeparator )
 
   def treeIgnoringHiddenFilesAndDirectories( root: File ) = tree( root, { !_.isHidden } ) filter { !_.isHidden }
+
+  def stringToFile( s: String ) = new File( s )
 }
 
 object SerializableUtilities {

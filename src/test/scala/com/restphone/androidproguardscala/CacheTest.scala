@@ -54,7 +54,7 @@ class CacheTest extends FunSuite with ShouldMatchers {
 
     // We need to put something into the file so it exists,
     // but it doesn't need to be a real jar.  The disk cache
-    // relies on file checksums.gt
+    // relies on file checksums.
 
     val cachefile = new File( tmpdir, "cache.1.cache" )
 

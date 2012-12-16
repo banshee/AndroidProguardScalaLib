@@ -28,9 +28,6 @@ class ProguardConfigurationGenerationTest extends FunSuite with ShouldMatchers {
 
     val tmpfile = File.createTempFile("arg0", "arg1")
     val result = ProguardConfigFileGenerator.generateConfigFileContents( cs, testConf, tmpfile )
-    
-    println("asdffrere")
-    println(result)
   }
 
   test( "can generate the right set of Provides* and Uses*" ) {

@@ -13,7 +13,6 @@
 		<conf name="optional" visibility="public" description=""/>
 		
 		
-		
 		<conf name="sources" visibility="public" description=""/>
 		<conf name="docs" visibility="public" description=""/>
 		<conf name="pom" visibility="public" description=""/>
