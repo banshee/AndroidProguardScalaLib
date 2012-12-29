@@ -1,11 +1,8 @@
 package com.restphone.androidproguardscala
 
-trait ProvidesLogging {
-  def logMsg(msg: String)
-  def logError(msg: String)
-}
+import com.restphone.jartender.ProvidesLogging
 
-object ProvidesLogging {
+object AndroidProguardScalaLibLogging {
   val NullLogger = new ProvidesLogging {
     def logMsg(msg: String) {}
     def logError(msg: String) {}
