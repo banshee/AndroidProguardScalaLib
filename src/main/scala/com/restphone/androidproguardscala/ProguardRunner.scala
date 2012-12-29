@@ -8,14 +8,15 @@ import scalaz._
 import Scalaz._
 import java.io.File
 import java.io.IOException
-
 import scala.Array.canBuildFrom
-
 import com.google.common.base.Charsets
 import com.google.common.io.Files
-import com.restphone.androidproguardscala.RichFile.tree
+import com.restphone.jartender.RichFile.tree
 import com.restphone.jartender.DependencyAnalyser
 import com.restphone.jartender.ProvidesClass
+import com.restphone.jartender.JartenderCacheParameters
+import com.restphone.jartender.CacheSystem
+import com.restphone.jartender.Shrinker
 
 class ProguardRunner(  cacheSystem: CacheSystem, props: Properties = System.getProperties ) extends Shrinker {
   def execute( conf: JartenderCacheParameters ): FileFailureValidation[File] = {

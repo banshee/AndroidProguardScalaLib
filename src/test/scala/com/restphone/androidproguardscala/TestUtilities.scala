@@ -7,7 +7,7 @@ import scala.util.Random.shuffle
 import scalaz._
 import Scalaz._
 import java.io.File
-import com.restphone.androidproguardscala.RichFile._
+import com.restphone.jartender.RichFile._
 import com.google.common.io.Files
 import com.restphone.jartender.UsesClass
 import com.restphone.jartender._

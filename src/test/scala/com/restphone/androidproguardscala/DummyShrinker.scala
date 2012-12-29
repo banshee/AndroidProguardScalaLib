@@ -6,6 +6,8 @@ import com.google.common.base.Charsets
 import com.google.common.io.Files
 import scalaz._
 import Scalaz._
+import com.restphone.jartender.JartenderCacheParameters
+import com.restphone.jartender.Shrinker
 
 class DummyShrinker extends Shrinker {
   def execute( conf: JartenderCacheParameters ): FileFailureValidation[File] = convertIoExceptionToValidation("dummy output file"){

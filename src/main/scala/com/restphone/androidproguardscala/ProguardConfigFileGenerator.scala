@@ -7,7 +7,7 @@ import scala.Array.canBuildFrom
 
 import com.google.common.base.Charsets
 import com.google.common.io.Files
-import com.restphone.androidproguardscala.RichFile.tree
+import com.restphone.jartender.RichFile.tree
 import com.restphone.jartender.DependencyAnalyser
 import com.restphone.jartender.ProvidesClass
 

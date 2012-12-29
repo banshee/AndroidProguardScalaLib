@@ -7,7 +7,7 @@ import scala.util.Random.shuffle
 import scalaz._
 import Scalaz._
 import java.io.File
-import com.restphone.androidproguardscala.RichFile._
+import com.restphone.jartender.RichFile._
 import com.google.common.io.Files
 import com.restphone.jartender.UsesClass
 import com.restphone.jartender._
@@ -15,6 +15,9 @@ import com.restphone.jartender.FileFailureValidation._
 import com.google.common.base.Charsets
 import scala.PartialFunction._
 import com.restphone.androidproguardscala.TestUtilities._
+import com.restphone.jartender.ExistingLibrary
+import com.restphone.jartender.CacheSystem
+import com.restphone.jartender.BuiltLibrary
 
 class FullRunTest extends FunSuite with ShouldMatchers {
   test( "should not find a match when there's nothing in the cache" ) {

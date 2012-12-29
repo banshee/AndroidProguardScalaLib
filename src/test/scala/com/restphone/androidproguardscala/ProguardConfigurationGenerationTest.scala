@@ -10,9 +10,11 @@ import scala.util.Random.shuffle
 import scalaz._
 import Scalaz._
 import java.io.File
-import com.restphone.androidproguardscala.RichFile._
+import com.restphone.jartender.RichFile._
 import com.restphone.androidproguardscala.TestUtilities._
 import com.google.common.io.Files
+import com.restphone.jartender.JartenderCacheParameters
+import com.restphone.jartender.CacheSystem
 
 class ProguardConfigurationGenerationTest extends FunSuite with ShouldMatchers {
   test( "can generate the right proguard config file" ) {
@@ -21,8 +23,9 @@ class ProguardConfigurationGenerationTest extends FunSuite with ShouldMatchers {
     val conf = createTestConfiguration
     val pr = new ProguardRunner( cs )
     val result = pr.generateConfigFileContents( cs, conf, tmpfile )
-    
-    println(f"resutasd $result")
+    println("hereiamdf")
+    println(result.getOrElse("fnord"))
+    result should be ('notTested)
   }
 
   val createTestConfiguration = JartenderCacheParameters(
@@ -34,5 +37,4 @@ class ProguardConfigurationGenerationTest extends FunSuite with ShouldMatchers {
     libraryJars = Array.empty,
     proguardDefaults = "# defaults here",
     proguardAdditionsFile = "additionsFile" )
-
 }
