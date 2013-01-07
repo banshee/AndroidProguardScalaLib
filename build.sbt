@@ -8,7 +8,9 @@ organization := "com.restphone"
 
 version := "0.1-SNAPSHOT"
 
-scalaVersion := "2.10.0-SNAPSHOT"
+scalaVersion := "2.10.0-RC3"
+
+scalaBinaryVersion <<= scalaVersion
 
 // Compile for these Scala versions
 crossScalaVersions := Seq("2.10.0-RC1")
@@ -23,7 +25,8 @@ externalResolvers := Seq(
 transitiveClassifiers := Seq("sources")
 
 libraryDependencies ++= Seq(
-  "com.restphone" % "jartender_2.10" % "0.2-SNAPSHOT",
+  "com.restphone" %% "jartender" % "0.3-SNAPSHOT",
+  "com.restphone" %% "scalatestutilities" % "latest.snapshot" % "test",
   "org.scalaz" % "scalaz-core_2.10.0-RC3" % "7.0.0-M5",
   "net.sf.proguard" % "proguard-base" % "4.8"
 )
