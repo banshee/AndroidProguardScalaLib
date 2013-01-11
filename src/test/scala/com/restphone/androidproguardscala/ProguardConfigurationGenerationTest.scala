@@ -32,7 +32,7 @@ trait ValidationNELMatcher extends ShouldMatchers {
 class ProguardConfigurationGenerationTest extends FunSuite with ShouldMatchers with ValidationNELMatcher {
   test( "can generate the right proguard config file with a missing additions" ) {
     val x = configFileForParameters( baseProguardConfiguration )
-    x.successValue should include( "# additionsFile (The system cannot find the file specified)" )
+    x.successValue should include( "# additionsFile (" )
     x.successValue should include( "# defaults here" )
     x.successValue should include( "# Inserting proguard additions file" )
   }
