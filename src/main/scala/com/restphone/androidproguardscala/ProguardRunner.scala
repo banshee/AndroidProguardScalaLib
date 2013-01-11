@@ -30,7 +30,7 @@ class ProguardRunner( cacheSystem: CacheSystem, props: Properties = System.getPr
   def execute( conf: ProguardCacheParameters ): FailureValidation[File] = {
     for {
       cacheDir <- validDirectory( new File( conf.jartenderConfiguration.cacheDir ), "cache directory" )
-      configfilename <- validatedTempFile( "temp file for ProGuard configuration", "jartender_proguard", ".conf", cacheDir )
+      configfilename <- (new File(cacheDir, "proguard_processed.conf" )).success
       cachedJar <- validatedTempFile( "cachedJar file", "jartender_cache_", ".jar", cacheDir )
       configFile <- generateConfigFile( conf, cachedJar, configfilename )
       shrinkerOutput <- executeProguard( new File( configFile.getPath ) )
@@ -83,7 +83,6 @@ class ProguardRunner( cacheSystem: CacheSystem, props: Properties = System.getPr
   def generateConfigFile( c: ProguardCacheParameters, cachedJarLocation: File, outputLocation: File ) = {
     generateConfigFileContents( cacheSystem, c, cachedJarLocation ) map { contents =>
       Files.write( contents, outputLocation, Charsets.UTF_8 )
-      println( f"proguardconfis $contents" )
       outputLocation
     }
   }
