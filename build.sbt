@@ -43,7 +43,4 @@ publishTo <<= version { (v: String) =>
     Some("releases" at nexus + "releases")
 }
 
-credentials += Credentials("Sonatype Nexus Repository Manager", 
-                           "git", 
-                           "deployment",
-                           "deploy")
+credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
