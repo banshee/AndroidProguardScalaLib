@@ -13,6 +13,15 @@ case class ProguardCacheParameters(
 
 -ignorewarnings
 -forceprocessing
+    
+-keep public class scala.ScalaObject
+-keep public class scala.Function0, scala.Function1
+
+# Fix for https://issues.scala-lang.org/browse/SI-5397 
+
+-keep class scala.collection.SeqLike {
+    public protected *;
+}
     """, // an arbitrary string added to the proguard conf file
   proguardAdditionsFile: String = "" // Path to file added to configuration - can be ""
   )
