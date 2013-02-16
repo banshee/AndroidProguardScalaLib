@@ -1,7 +1,5 @@
 // use sbt deliver-local to create ivy.xml
 
-offline in Test := true
-
 name := "AndroidProguardScalaLib"
 
 organization := "com.restphone"
