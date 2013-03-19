@@ -11,6 +11,7 @@ scalaVersion := "2.10.1"
 publishMavenStyle := true
 
 libraryDependencies ++= Seq(
+  "com.google.guava" % "guava" % "13.0.1",
   "net.sf.proguard" % "proguard-base" % "4.8",
   "com.restphone" %% "jartender" % "0.5",
   "org.scalaz" %% "scalaz-core" % "7.0.0-M7",
@@ -27,12 +28,6 @@ publishTo <<= version { (v: String) =>
 }
 
 publishArtifact in Test := false
-
-libraryDependencies ++= Seq(
-  "org.scalaz" %% "scalaz-core" % "7.0.0-M7",
-  "com.google.guava" % "guava" % "13.0.1",
-  "org.scalatest" %% "scalatest" % "2.0.M5b" % "test"
-)
 
 pomExtra := (
   <url>https://github.com/banshee/AndroidProguardScalaLib</url>
