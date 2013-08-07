@@ -9,7 +9,7 @@ import com.restphone.jartender.CacheSystem
 import com.restphone.jartender.ExistingLibrary
 import com.restphone.jartender.FileFailureValidation._
 import com.restphone.jartender.JartenderCacheParameters
-import com.restphone.scalatestutilities.ScalaTestMatchers.ValidationNELBeMatcher
+import com.restphone.scalatestutilities.ScalaTestMatchers.ValidationNelBeMatcher
 import com.restphone.scalatestutilities.ScalaTestMatchers._
 import com.restphone.scalatestutilities.TestUtilities.getResource
 import scalaz._

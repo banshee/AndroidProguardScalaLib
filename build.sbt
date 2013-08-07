@@ -4,19 +4,19 @@ name := "AndroidProguardScalaLib"
 
 organization := "com.restphone"
 
-version := "0.4"
+version := "0.5-SNAPSHOT"
 
-scalaVersion := "2.10.1"
+scalaVersion := "2.10.2"
 
 publishMavenStyle := true
 
 libraryDependencies ++= Seq(
-  "com.google.guava" % "guava" % "13.0.1",
-  "net.sf.proguard" % "proguard-base" % "4.8",
+  "com.google.guava" % "guava" % "14.0.1",
+  "net.sf.proguard" % "proguard-base" % "4.10",
   "com.restphone" %% "jartender" % "0.5",
-  "org.scalaz" %% "scalaz-core" % "7.0.0-M7",
+  "org.scalaz" % "scalaz-core_2.10" % "7.0.2",
   "org.scalatest" %% "scalatest" % "2.0.M5b" % "test",
-  "com.restphone" %% "scalatestutilities" % "0.4-SNAPSHOT" % "test"
+  "com.restphone" %% "scalatestutilities" % "0.5-SNAPSHOT" % "test"
 )
 
 publishArtifact in Test := false

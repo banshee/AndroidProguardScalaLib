@@ -11,17 +11,17 @@ import com.google.common.io.Files
 import com.restphone.jartender.CacheSystem
 import com.restphone.jartender.FileFailureValidation._
 import com.restphone.jartender.JartenderCacheParameters
-import com.restphone.scalatestutilities.ScalaTestMatchers.ValidationNELBeMatcher
+import com.restphone.scalatestutilities.ScalaTestMatchers.ValidationNelBeMatcher
 import com.restphone.scalatestutilities.TestUtilities.getResource
 
 import scalaz._
-import scalaz.ValidationNEL
+import scalaz.ValidationNel
 
 import com.restphone.scalatestutilities.HasSuccessValue._
 
-trait ValidationNELMatcher extends ShouldMatchers {
-  def succeed[FailureT, SuccessT]( fn: SuccessT => Unit = { x: SuccessT => () } ): ValidationNEL[FailureT, SuccessT] => MatchResult = {
-    ( x: ValidationNEL[FailureT, SuccessT] ) =>
+trait ValidationNelMatcher extends ShouldMatchers {
+  def succeed[FailureT, SuccessT]( fn: SuccessT => Unit = { x: SuccessT => () } ): ValidationNel[FailureT, SuccessT] => MatchResult = {
+    ( x: ValidationNel[FailureT, SuccessT] ) =>
       {
         x map { fn( _ ) }
         be( 'Success )( x )
@@ -29,7 +29,7 @@ trait ValidationNELMatcher extends ShouldMatchers {
   }
 }
 
-class ProguardConfigurationGenerationTest extends FunSuite with ShouldMatchers with ValidationNELMatcher {
+class ProguardConfigurationGenerationTest extends FunSuite with ShouldMatchers with ValidationNelMatcher {
   test( "can generate the right proguard config file with a missing additions" ) {
     val x = configFileForParameters( baseProguardConfiguration )
     x.successValue should include( "# additionsFile (" )
