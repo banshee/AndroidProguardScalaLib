@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:e="http://ant.apache.org/ivy/extra">
-	<info organisation="com.restphone" module="androidproguardscalalib_2.10" revision="0.6-SNAPSHOT" status="integration" publication="20140422223608">
+	<info organisation="com.restphone" module="androidproguardscalalib_2.11" revision="0.6-SNAPSHOT" status="integration" publication="20140426152218">
 		<description>
 		AndroidProguardScalaLib
 		</description>
@@ -21,19 +21,19 @@
 		
 	</configurations>
 	<publications>
-		<artifact name="androidproguardscalalib_2.10" type="pom" ext="pom" conf="pom"/>
-		<artifact name="androidproguardscalalib_2.10" type="jar" ext="jar" conf="compile"/>
-		<artifact name="androidproguardscalalib_2.10" type="src" ext="jar" conf="sources" e:classifier="sources"/>
-		<artifact name="androidproguardscalalib_2.10" type="doc" ext="jar" conf="docs" e:classifier="javadoc"/>
+		<artifact name="androidproguardscalalib_2.11" type="pom" ext="pom" conf="pom"/>
+		<artifact name="androidproguardscalalib_2.11" type="jar" ext="jar" conf="compile"/>
+		<artifact name="androidproguardscalalib_2.11" type="src" ext="jar" conf="sources" e:classifier="sources"/>
+		<artifact name="androidproguardscalalib_2.11" type="doc" ext="jar" conf="docs" e:classifier="javadoc"/>
 	</publications>
 	<dependencies>
 		
-		<dependency org="org.scala-lang" name="scala-library" rev="2.10.4" conf="compile->default(compile)"/>
+		<dependency org="org.scala-lang" name="scala-library" rev="2.11.0" conf="compile->default(compile)"/>
 		<dependency org="net.sf.proguard" name="proguard-base" rev="4.10" conf="compile->default(compile)"/>
 		<dependency org="com.google.guava" name="guava" rev="16.0.1" conf="compile->default(compile)"/>
-		<dependency org="com.restphone" name="scalatestutilities_2.10" rev="0.6-SNAPSHOT" conf="compile->default(compile)"/>
-		<dependency org="com.restphone" name="jartender_2.10" rev="0.7-SNAPSHOT" conf="compile->default(compile)"/>
-		<dependency org="com.restphone" name="scalatestutilities_2.10" rev="0.5" conf="test->default(compile)"/>
-		<dependency org="org.scalaz" name="scalaz-core_2.10" rev="7.0.6" conf="compile->default(compile)"/>
+		<dependency org="com.restphone" name="scalatestutilities_2.11" rev="0.6-SNAPSHOT" conf="compile->default(compile)"/>
+		<dependency org="com.restphone" name="jartender_2.11" rev="0.7-SNAPSHOT" conf="compile->default(compile)"/>
+		<dependency org="com.restphone" name="scalatestutilities_2.11" rev="0.5" conf="test->default(compile)"/>
+		<dependency org="org.scalaz" name="scalaz-core_2.11" rev="7.0.6" conf="compile->default(compile)"/>
 	</dependencies>
 </ivy-module>

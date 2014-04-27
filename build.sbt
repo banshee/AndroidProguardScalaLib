@@ -6,7 +6,9 @@ organization := "com.restphone"
 
 version := "0.6-SNAPSHOT"
 
-scalaVersion := "2.10.4"
+// "com.restphone" %% "androidproguardscalalib" % "0.6-SNAPSHOT"
+
+scalaVersion := "2.11.0"
 
 publishMavenStyle := true
 
